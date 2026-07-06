@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "zaaynaa",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["shopify", "hydrogen", "dev", "--path", "07_Site/storefront"],
+      "port": 3000
+    }
+  ]
+}

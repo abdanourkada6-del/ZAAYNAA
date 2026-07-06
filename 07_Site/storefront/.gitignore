@@ -1,0 +1,14 @@
+node_modules
+/dist
+/build
+/public/build
+.cache
+.mf
+.env
+.env.local
+.shopify
+.react-router
+tsconfig.tsbuildinfo
+*.local
+.DS_Store
+Thumbs.db

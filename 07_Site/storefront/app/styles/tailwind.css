@@ -1,0 +1,20 @@
+/**
+ * Configure Tailwind v4 in this file using CSS variables and directives:
+ * https://tailwindcss.com/docs/v4-beta#css-first-configuration
+ */
+
+@import 'tailwindcss';
+
+/* ── ZAAYNAA design tokens (charte officielle) ───────────── */
+@theme {
+  --color-cream: #f6f1e7; /* fond ivoire */
+  --color-gold: #c9a24b; /* or champagne / vermeil — accents, prix, CTA */
+  --color-gold-dark: #8a6d3b; /* or foncé — texte/labels */
+  --color-emerald: #1e3d34; /* vert émeraude profond — collection Nour */
+  --color-velvet: #14110f; /* noir velours — sections sombres, footer */
+  --color-taupe: #5b5550; /* gris taupe — texte secondaire */
+  --color-ink: #14110f;
+
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Jost', 'Inter', system-ui, -apple-system, sans-serif;
+}
