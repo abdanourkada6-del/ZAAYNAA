@@ -1,4 +1,5 @@
 import {useOptimisticCart} from '@shopify/hydrogen';
+import {AnimatePresence} from 'framer-motion';
 import {Link} from 'react-router';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
@@ -61,23 +62,25 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
         </p>
         <div>
           <ul aria-labelledby="cart-lines">
-            {(cart?.lines?.nodes ?? []).map((line) => {
-              // we do not render non-parent lines at the root of the cart
-              if (
-                'parentRelationship' in line &&
-                line.parentRelationship?.parent
-              ) {
-                return null;
-              }
-              return (
-                <CartLineItem
-                  key={line.id}
-                  line={line}
-                  layout={layout}
-                  childrenMap={childrenMap}
-                />
-              );
-            })}
+            <AnimatePresence initial={false}>
+              {(cart?.lines?.nodes ?? []).map((line) => {
+                // we do not render non-parent lines at the root of the cart
+                if (
+                  'parentRelationship' in line &&
+                  line.parentRelationship?.parent
+                ) {
+                  return null;
+                }
+                return (
+                  <CartLineItem
+                    key={line.id}
+                    line={line}
+                    layout={layout}
+                    childrenMap={childrenMap}
+                  />
+                );
+              })}
+            </AnimatePresence>
           </ul>
         </div>
         {cartHasItems && <CartSummary cart={cart} layout={layout} />}

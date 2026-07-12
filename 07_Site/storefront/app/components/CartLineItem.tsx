@@ -1,6 +1,8 @@
 import type {CartLineUpdateInput} from '@shopify/hydrogen/storefront-api-types';
 import type {CartLayout, LineItemChildrenMap} from '~/components/CartMain';
 import {CartForm, Image, type OptimisticCartLine} from '@shopify/hydrogen';
+import {motion} from 'framer-motion';
+import {DUR, EASE, EASE_IN} from '~/lib/motion';
 import {useVariantUrl} from '~/lib/variants';
 import {Link} from 'react-router';
 import {ProductPrice} from './ProductPrice';
@@ -35,7 +37,17 @@ export function CartLineItem({
   const childrenLabelId = `cart-line-children-${id}`;
 
   return (
-    <li key={id} className="cart-line">
+    // layout : les lignes suivantes glissent en douceur quand une ligne
+    // disparaît ; sortie plus courte que l'entrée (~65 %).
+    <motion.li
+      key={id}
+      className="cart-line"
+      layout
+      initial={{opacity: 0, y: 8}}
+      animate={{opacity: 1, y: 0}}
+      exit={{opacity: 0, y: -8, transition: {duration: DUR.fast, ease: EASE_IN}}}
+      transition={{duration: DUR.base, ease: EASE}}
+    >
       <div className="cart-line-inner">
         {image && (
           <Image
@@ -93,7 +105,7 @@ export function CartLineItem({
           </ul>
         </div>
       ) : null}
-    </li>
+    </motion.li>
   );
 }
 

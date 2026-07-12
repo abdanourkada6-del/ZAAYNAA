@@ -1,7 +1,8 @@
 import {Link} from 'react-router';
 import {Image, Money} from '@shopify/hydrogen';
 import type {CurrencyCode} from '@shopify/hydrogen/storefront-api-types';
-import {Reveal} from '~/components/Reveal';
+import {motion} from 'framer-motion';
+import {DUR, EASE, STAGGER} from '~/lib/motion';
 import {SHOPIFY_EDITORIAL} from '~/lib/brand';
 
 /**
@@ -72,7 +73,23 @@ export function ProductCardV2({
     ) ?? null;
 
   return (
-    <Reveal delay={(index % 3) * 0.1}>
+    // Reveal en cascade (stagger 50 ms/item), lift au survol, feedback au
+    // press. Un seul élément animé — transform/opacity uniquement.
+    <motion.div
+      initial={{opacity: 0, y: 24}}
+      whileInView={{opacity: 1, y: 0}}
+      viewport={{once: true, margin: '-80px'}}
+      whileHover={{y: -6}}
+      whileTap={{scale: 0.98}}
+      transition={{
+        duration: DUR.slow,
+        ease: EASE,
+        delay: (index % 6) * STAGGER,
+        // hover/tap réagissent vite, indépendamment du reveal
+        y: {duration: DUR.base, ease: EASE},
+        scale: {duration: DUR.fast, ease: EASE},
+      }}
+    >
       <Link
         to={`/products/${product.handle}`}
         className="product-card"
@@ -114,6 +131,6 @@ export function ProductCardV2({
           </div>
         </div>
       </Link>
-    </Reveal>
+    </motion.div>
   );
 }

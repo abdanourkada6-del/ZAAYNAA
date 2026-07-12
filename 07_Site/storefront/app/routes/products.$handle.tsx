@@ -1,5 +1,7 @@
 import {useLoaderData, Link} from 'react-router';
-import {useState} from 'react';
+import {useState, type ReactNode} from 'react';
+import {motion, AnimatePresence} from 'framer-motion';
+import {DUR, EASE} from '~/lib/motion';
 import type {Route} from './+types/products.$handle';
 import {
   getSelectedProductOptions,
@@ -106,12 +108,25 @@ export default function Product() {
         <div className="zy-pdp-gallery">
           <div className="zy-pdp-main-img">
             {mainImage ? (
-              <Image
-                data={mainImage}
-                alt={mainImage.altText || displayName}
-                sizes="(min-width: 56em) 50vw, 100vw"
-                style={{width: '100%', height: '100%', objectFit: 'cover'}}
-              />
+              // Crossfade : l'image entrante et la sortante se fondent dans
+              // le même conteneur (aspect-ratio réservé → zéro CLS).
+              <AnimatePresence initial={false}>
+                <motion.div
+                  key={mainImage.url}
+                  className="pdp-img-layer"
+                  initial={{opacity: 0}}
+                  animate={{opacity: 1}}
+                  exit={{opacity: 0}}
+                  transition={{duration: DUR.base, ease: EASE}}
+                >
+                  <Image
+                    data={mainImage}
+                    alt={mainImage.altText || displayName}
+                    sizes="(min-width: 56em) 50vw, 100vw"
+                    style={{width: '100%', height: '100%', objectFit: 'cover'}}
+                  />
+                </motion.div>
+              </AnimatePresence>
             ) : (
               <span className="zy-card-arabic">{arabic ?? '✦'}</span>
             )}
@@ -181,30 +196,27 @@ export default function Product() {
             </div>
           )}
 
-          {/* Accordions */}
-          <details className="zy-accordion" open>
-            <summary>Détails &amp; matériaux</summary>
+          {/* Accordions (animés — AnimatePresence, jamais bloquants) */}
+          <PdpAccordion title="Détails & matériaux" defaultOpen>
             <div
               style={{paddingBottom: '1.2rem', fontSize: '0.95rem', opacity: 0.85}}
               dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
             />
-          </details>
-          <details className="zy-accordion">
-            <summary>Le détail caché ✦</summary>
+          </PdpAccordion>
+          <PdpAccordion title="Le détail caché ✦">
             <p>
               Sous la monture, un motif géométrique marocain se révèle de profil —
               l&rsquo;architecture du zellige cachée dans l&rsquo;or. Un secret
               que seule la porteuse connaît.
             </p>
-          </details>
-          <details className="zy-accordion">
-            <summary>Livraison &amp; écrin</summary>
+          </PdpAccordion>
+          <PdpAccordion title="Livraison & écrin">
             <p>
               Livrée dans l&rsquo;écrin velours ZAAYNAA, gravure « ZAAYNAA »
               offerte à l&rsquo;intérieur. Emballage précieux, expédition suivie.
               Livraison internationale disponible.
             </p>
-          </details>
+          </PdpAccordion>
         </div>
       </article>
 
@@ -260,6 +272,52 @@ export default function Product() {
         }}
       />
     </>
+  );
+}
+
+/**
+ * Accordéon animé (remplace <details> natif) : hauteur auto via
+ * AnimatePresence, sortie ≈ 65 % de l'entrée, bouton accessible
+ * (aria-expanded, focusable, ≥44px).
+ */
+function PdpAccordion({
+  title,
+  children,
+  defaultOpen = false,
+}: {
+  title: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="zy-accordion">
+      <button
+        type="button"
+        className="zy-accordion-trigger"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        {title}
+        <span aria-hidden="true">{open ? '−' : '+'}</span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{height: 0, opacity: 0}}
+            animate={{height: 'auto', opacity: 1}}
+            exit={{height: 0, opacity: 0}}
+            transition={{
+              height: {duration: DUR.base, ease: EASE},
+              opacity: {duration: DUR.fast, ease: EASE},
+            }}
+            style={{overflow: 'hidden'}}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 

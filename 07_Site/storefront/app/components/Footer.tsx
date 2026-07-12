@@ -76,6 +76,17 @@ export function Footer(_props: FooterProps) {
         </div>
       </div>
 
+      <div className="footer-pay" style={{marginBottom: '1.5rem'}}>
+        <span>Paiement sécurisé</span>
+        <div className="pay-list" aria-label="Moyens de paiement acceptés">
+          <span className="pay-badge">Visa</span>
+          <span className="pay-badge">Mastercard</span>
+          <span className="pay-badge">PayPal</span>
+          <span className="pay-badge">Apple&nbsp;Pay</span>
+          <span className="pay-badge">Shop&nbsp;Pay</span>
+        </div>
+      </div>
+
       <div className="footer-bottom">
         <p className="footer-copy">
           © {year} ZAAYNAA — {BRAND.positioning}. Tous droits réservés.

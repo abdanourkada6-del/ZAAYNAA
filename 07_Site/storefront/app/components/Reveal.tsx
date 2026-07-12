@@ -1,5 +1,6 @@
 import {motion} from 'framer-motion';
 import type {ReactNode} from 'react';
+import {DUR, EASE} from '~/lib/motion';
 
 /**
  * Reveal — animation douce d'apparition (fade + slide léger) au scroll.
@@ -29,7 +30,7 @@ export function Reveal({
       initial={{opacity: 0, y}}
       whileInView={{opacity: 1, y: 0}}
       viewport={{once: true, margin: '-80px'}}
-      transition={{duration: 0.8, ease: [0.22, 1, 0.36, 1], delay}}
+      transition={{duration: DUR.slow, ease: EASE, delay}}
     >
       {children}
     </MotionTag>

@@ -92,6 +92,7 @@ export default function Homepage() {
     <div className="home">
       <Hero />
       <Marquee />
+      <Reassurance />
       <Story />
       <Categories categories={data.categories} />
       <FeaturedPieces featured={data.featured} />
@@ -183,6 +184,81 @@ function Marquee() {
         ))}
       </div>
     </div>
+  );
+}
+
+/* ── Bandeau réassurance (icônes SVG fines) ─────────── */
+const REASSURANCE = [
+  {
+    label: 'Livraison offerte',
+    text: 'Dès 60 $, expédition suivie',
+    icon: (
+      <>
+        <path d="M3 7h11v8H3z" />
+        <path d="M14 10h4l3 3v2h-7z" />
+        <circle cx="7" cy="17" r="1.6" />
+        <circle cx="17" cy="17" r="1.6" />
+      </>
+    ),
+  },
+  {
+    label: 'Écrin ZAAYNAA',
+    text: 'Chaque pièce dans son écrin',
+    icon: (
+      <>
+        <path d="M3 8h18v11H3z" />
+        <path d="M3 8l2-3h14l2 3" />
+        <path d="M12 5v14" />
+      </>
+    ),
+  },
+  {
+    label: 'Paiement sécurisé',
+    text: 'Checkout chiffré Shopify',
+    icon: (
+      <>
+        <rect x="5" y="10" width="14" height="10" rx="1.5" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+      </>
+    ),
+  },
+  {
+    label: 'Argent 925 & vermeil',
+    text: 'Vermeil or 18k, hypoallergénique',
+    icon: (
+      <>
+        <path d="M6 3h12l3 6-9 12L3 9z" />
+        <path d="M3 9h18" />
+        <path d="M9 3 6 9l6 12 6-12-3-6" />
+      </>
+    ),
+  },
+];
+
+function Reassurance() {
+  return (
+    <section className="reassur" aria-label="Nos engagements">
+      <div className="reassur-grid">
+        {REASSURANCE.map((item, i) => (
+          <Reveal key={item.label} delay={i * 0.06} className="reassur-item">
+            <svg
+              className="reassur-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              {item.icon}
+            </svg>
+            <p className="reassur-label">{item.label}</p>
+            <p className="reassur-text">{item.text}</p>
+          </Reveal>
+        ))}
+      </div>
+    </section>
   );
 }
 

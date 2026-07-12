@@ -15,7 +15,7 @@
   --sand: #f0eae0; /* beige sections */
   --emerald: #1e3d34; /* vert émeraude (accent secondaire) */
   --velvet: #0d0d0d; /* noir profond */
-  --taupe: #9a9088; /* gris chaud texte secondaire */
+  --taupe: #6b6259; /* gris chaud texte secondaire — AA (≥4.5:1) sur ivoire */
 
   --color-dark: var(--velvet);
   --color-light: #fff;
@@ -55,60 +55,8 @@ h4 {
   color: var(--ink);
 }
 
-/* ── Curseur or personnalisé (desktop uniquement) ── */
-@media (pointer: fine) {
-  body {
-    cursor: none;
-  }
-  body a,
-  body button,
-  body input,
-  body select,
-  body textarea,
-  body summary,
-  body label {
-    cursor: none;
-  }
-  .zv-cursor,
-  .zv-cursor-ring {
-    display: block;
-  }
-}
-
-.zv-cursor,
-.zv-cursor-ring {
-  display: none;
-}
-
-.zv-cursor {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  background: var(--gold);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform 0.15s ease;
-  transform: translate(-50%, -50%);
-  left: -100px;
-  top: -100px;
-}
-
-.zv-cursor-ring {
-  position: fixed;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--gold);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
-  transition:
-    width 0.3s ease,
-    height 0.3s ease;
-  transform: translate(-50%, -50%);
-  left: -100px;
-  top: -100px;
-}
+/* Curseur : natif partout (le curseur or custom a été retiré — il ne
+   s'affichait pas de façon fiable et masquait le curseur système). */
 
 a {
   color: inherit;
@@ -208,7 +156,13 @@ aside {
   position: fixed;
   right: calc(-1 * var(--aside-width));
   top: 0;
-  transition: transform 200ms ease-in-out;
+  /* Fermeture : ease-in, ~70 % de la durée d'ouverture */
+  transition: transform 260ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Ouverture : courbe à léger rebond, sensation « spring » */
+.overlay.expanded aside {
+  transition: transform 380ms cubic-bezier(0.34, 1.2, 0.64, 1);
 }
 
 aside header {
@@ -270,7 +224,8 @@ aside li {
 }
 
 .overlay {
-  background: rgba(0, 0, 0, 0.2);
+  /* Scrim 40–60 % pour isoler le premier plan (skill ui-ux-pro-max) */
+  background: rgba(13, 13, 13, 0.5);
   bottom: 0;
   left: 0;
   opacity: 0;
@@ -278,10 +233,17 @@ aside li {
   position: fixed;
   right: 0;
   top: 0;
-  transition: opacity 400ms ease-in-out;
-  transition: opacity 400ms;
+  transition:
+    opacity 220ms cubic-bezier(0.4, 0, 1, 1),
+    visibility 220ms;
   visibility: hidden;
   z-index: 10;
+}
+
+.overlay.expanded {
+  transition:
+    opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 300ms;
 }
 
 .overlay .close-outside {
@@ -1520,6 +1482,12 @@ main.main-padded {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative; /* couches du crossfade galerie */
+}
+
+.zy-pdp-main-img .pdp-img-layer {
+  position: absolute;
+  inset: 0;
 }
 
 .zy-pdp-main-img img {
@@ -1660,6 +1628,32 @@ main.main-padded {
 /* Accordions */
 .zy-accordion {
   border-top: 1px solid var(--sand);
+}
+
+/* Déclencheur bouton (accordéon animé framer-motion) */
+.zy-accordion-trigger {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.1rem 0;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: var(--velvet);
+}
+
+.zy-accordion-trigger span {
+  color: var(--gold-dark);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.zy-accordion-trigger:hover span {
+  color: var(--gold);
 }
 
 .zy-accordion summary {
@@ -1922,7 +1916,9 @@ main.main-padded {
   font-size: 9px;
   letter-spacing: 0.45em;
   text-transform: uppercase;
-  color: var(--gold);
+  /* gold-dark pour le TEXTE sur fond clair (contraste AA) ;
+     --gold reste réservé aux gros titres et éléments décoratifs */
+  color: var(--gold-dark);
   margin-bottom: 24px;
   display: flex;
   align-items: center;
@@ -2147,6 +2143,11 @@ main.main-padded {
   animation: marquee 28s linear infinite;
   white-space: nowrap;
   width: max-content;
+}
+
+/* Pause au survol — l'utilisateur peut lire le bandeau */
+.marquee-wrap:hover .marquee-track {
+  animation-play-state: paused;
 }
 
 .marquee-item {
@@ -2406,7 +2407,7 @@ main.main-padded {
   font-size: 9px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--gold-dark); /* texte sur clair → AA */
   margin-bottom: 8px;
 }
 
@@ -2781,14 +2782,35 @@ main.main-padded {
 }
 
 @media (max-width: 768px) {
+  /* Hero empilé : texte en haut (sur crème), grande image de la bague
+     bien visible en dessous — au lieu d'une image estompée en fond. */
+  .hero {
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    padding-top: calc(var(--header-height) + 4px);
+  }
+  .hero-bg {
+    display: none;
+  }
   .hero-content {
-    padding: 0 24px;
+    order: 1;
+    position: relative;
     max-width: 100%;
+    padding: 30px 24px 22px;
   }
   .hero-img {
+    order: 2;
+    position: relative;
+    inset: auto;
     width: 100%;
+    height: 58vh;
+    min-height: 340px;
     clip-path: none;
-    opacity: 0.22;
+    opacity: 1;
+  }
+  .hero-scroll {
+    display: none;
   }
   .story,
   .materials {
@@ -3270,15 +3292,15 @@ body > main {
   margin-top: 1rem;
 }
 
-/* ── Hovers premium ── */
+/* ── Hovers premium ──
+ * Le lift (translateY) et le press (scale) des cartes produit sont gérés
+ * par framer-motion (ProductCardV2 : whileHover/whileTap) — le CSS ne
+ * garde que l'ombre pour éviter un double transform. */
 .product-card {
-  transition:
-    transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    box-shadow 0.55s ease;
+  transition: box-shadow 0.28s ease;
 }
 
 .product-card:hover {
-  transform: translateY(-6px);
   box-shadow: 0 26px 55px -24px rgba(13, 13, 13, 0.4);
 }
 
@@ -3380,12 +3402,6 @@ body > main {
     font-size: 13px;
     padding: 0 34px;
     gap: 34px;
-  }
-  .hero-img {
-    opacity: 0.34;
-  }
-  .hero {
-    min-height: 88svh;
   }
 }
 
@@ -3688,12 +3704,12 @@ aside header .close {
   padding: 10px 6px;
 }
 
-/* ── Focus visibles (accessibilité clavier) ── */
+/* ── Focus visibles (accessibilité clavier, 2–4px) ── */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 summary:focus-visible {
-  outline: 1px solid var(--gold);
+  outline: 2px solid var(--gold-dark);
   outline-offset: 3px;
 }
 
@@ -3734,4 +3750,97 @@ summary:focus-visible {
   .cat-card img {
     transition: none;
   }
+}
+
+/*
+* ==================================================
+* ZAAYNAA — v6 : bandeau réassurance + paiement footer
+* ==================================================
+*/
+
+.reassur {
+  border-top: 1px solid var(--sand);
+  border-bottom: 1px solid var(--sand);
+  padding: 40px 10%;
+}
+
+.reassur-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 36px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+@media (min-width: 56em) {
+  .reassur-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+  }
+}
+
+.reassur-item {
+  text-align: center;
+  padding: 0 8px;
+}
+
+.reassur-icon {
+  width: 30px;
+  height: 30px;
+  color: var(--gold-dark); /* trait or foncé — AA */
+  margin: 0 auto 14px;
+  display: block;
+}
+
+.reassur-label {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 4px;
+}
+
+.reassur-text {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--taupe);
+  margin: 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .reassur {
+    padding: 32px 22px;
+  }
+}
+
+/* ── Footer : ligne moyens de paiement ── */
+.footer-pay {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.footer-pay span {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(250, 248, 244, 0.4);
+}
+
+.footer-pay .pay-list {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.footer-pay .pay-badge {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(250, 248, 244, 0.55);
+  border: 1px solid rgba(250, 248, 244, 0.18);
+  border-radius: 2px;
+  padding: 4px 8px;
+  white-space: nowrap;
 }

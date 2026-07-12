@@ -3,6 +3,7 @@ import {
   type ReactNode,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import {useId} from 'react';
@@ -36,6 +37,7 @@ export function Aside({
   const {type: activeType, close} = useAside();
   const expanded = type === activeType;
   const id = useId();
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const abortController = new AbortController();
 
@@ -49,6 +51,13 @@ export function Aside({
         },
         {signal: abortController.signal},
       );
+      // Gestion du focus : on entre dans le dialogue à son ouverture
+      // (attendre la fin du slide-in pour ne pas casser la transition).
+      const t = setTimeout(() => closeBtnRef.current?.focus(), 400);
+      return () => {
+        clearTimeout(t);
+        abortController.abort();
+      };
     }
     return () => abortController.abort();
   }, [close, expanded]);
@@ -64,7 +73,12 @@ export function Aside({
       <aside>
         <header>
           <h3 id={id}>{heading}</h3>
-          <button className="close reset" onClick={close} aria-label="Close">
+          <button
+            ref={closeBtnRef}
+            className="close reset"
+            onClick={close}
+            aria-label="Fermer"
+          >
             &times;
           </button>
         </header>

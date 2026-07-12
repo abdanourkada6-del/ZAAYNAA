@@ -17,4 +17,16 @@
 
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   --font-sans: 'Jost', 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* ── Tokens sémantiques shadcn/ui, mappés à la charte ZAAYNAA ──
+   * Requis par les composants shadcn (bg-background, text-primary…).
+   * On les fait pointer vers les couleurs de marque existantes plutôt
+   * que d'introduire une 2e palette parallèle. */
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-ink);
+  --color-primary: var(--color-gold);
+  --color-primary-foreground: var(--color-cream);
+  --color-muted: var(--color-cream);
+  --color-muted-foreground: var(--color-taupe);
+  --color-border: var(--color-gold-dark);
 }

@@ -1,7 +1,7 @@
 import {Await, Link, useLocation} from 'react-router';
 import {Suspense, useId} from 'react';
 import {motion, MotionConfig} from 'framer-motion';
-import {Cursor} from '~/components/Cursor';
+import {DUR, EASE} from '~/lib/motion';
 import type {
   CartApiQueryFragment,
   FooterQuery,
@@ -42,7 +42,6 @@ export function PageLayout({
     // utilisateurs qui préfèrent les animations réduites (fondus conservés).
     <MotionConfig reducedMotion="user">
       <Aside.Provider>
-        <Cursor />
         <CartAside cart={cart} />
         <SearchAside />
         <MobileMenuAside
@@ -63,7 +62,7 @@ export function PageLayout({
             key={location.pathname}
             initial={{opacity: 0, y: 10}}
             animate={{opacity: 1, y: 0}}
-            transition={{duration: 0.45, ease: [0.22, 1, 0.36, 1]}}
+            transition={{duration: DUR.base, ease: EASE}}
           >
             {children}
           </motion.div>

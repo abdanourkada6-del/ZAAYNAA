@@ -1,12 +1,64 @@
+import {useEffect, useState} from 'react';
+
 /**
- * Logo ZAAYNAA — version vectorielle propre (lotus + wordmark lisible).
- * Reproduit le concept du logo fourni (lotus « Elegance by Nature ») mais
- * avec une typographie nette et lisible à toute taille, fond transparent.
+ * Logo ZAAYNAA.
  *
- * tone="ink"  → sur fond clair (header, fond crème)
- * tone="cream"→ sur fond sombre (footer velours)
+ * Affiche les VRAIS fichiers logo (monogramme ZY dans la najma + wordmark) :
+ *   - tone="ink"   → /logo-zaaynaa-noir.png  (logo PRINCIPAL, fond clair : header)
+ *   - tone="cream" → /logo-zaaynaa-or.png    (fond sombre : footer)
+ *
+ * Tant que ces fichiers ne sont pas déposés dans /public, on retombe
+ * automatiquement sur le logo vectoriel de secours (aucun logo cassé).
+ * Dépose les 2 PNG (fond transparent de préférence) dans
+ *   07_Site/storefront/public/
+ * puis tout se met à jour tout seul.
  */
 export function Logo({
+  tone = 'ink',
+  tagline = false,
+  className,
+}: {
+  tone?: 'ink' | 'cream';
+  tagline?: boolean;
+  className?: string;
+}) {
+  const src =
+    tone === 'cream' ? '/logo-zaaynaa-or.png' : '/logo-zaaynaa-noir.png';
+  // 'pending' au SSR + 1er rendu client (→ SVG, pas de mismatch d'hydratation),
+  // puis on teste réellement si le PNG charge avant de basculer dessus.
+  const [status, setStatus] = useState<'pending' | 'ok' | 'missing'>('pending');
+
+  useEffect(() => {
+    const probe = new window.Image();
+    probe.onload = () => setStatus('ok');
+    probe.onerror = () => setStatus('missing');
+    probe.src = src;
+    return () => {
+      probe.onload = null;
+      probe.onerror = null;
+    };
+  }, [src]);
+
+  if (status === 'ok') {
+    return (
+      <img
+        src={src}
+        alt="ZAAYNAA — Modern Moroccan Quiet Luxury"
+        className={className}
+        decoding="async"
+      />
+    );
+  }
+
+  // 'pending' ou 'missing' → logo vectoriel de secours (aucune image cassée)
+  return <LogoFallback tone={tone} tagline={tagline} className={className} />;
+}
+
+/**
+ * Logo vectoriel de secours (lotus/najma + wordmark). Utilisé uniquement
+ * si le PNG n'est pas encore présent dans /public.
+ */
+function LogoFallback({
   tone = 'ink',
   tagline = false,
   className,
