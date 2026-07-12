@@ -3,27 +3,31 @@ import {useEffect, useState} from 'react';
 /**
  * Logo ZAAYNAA.
  *
- * Affiche les VRAIS fichiers logo (monogramme ZY dans la najma + wordmark) :
- *   - tone="ink"   → /logo-zaaynaa-noir.png  (logo PRINCIPAL, fond clair : header)
- *   - tone="cream" → /logo-zaaynaa-or.png    (fond sombre : footer)
+ * Deux usages principaux :
+ *   - variant="symbol"  → /zaaynaa-symbol.png (petit repère de marque, ex. header)
+ *   - variant="wordmark" → /logo-zaaynaa-noir.png ou /logo-zaaynaa-or.png
+ *                           (logo complet, ex. footer)
  *
- * Tant que ces fichiers ne sont pas déposés dans /public, on retombe
+ * Tant que les fichiers ne sont pas disponibles dans /public, on retombe
  * automatiquement sur le logo vectoriel de secours (aucun logo cassé).
- * Dépose les 2 PNG (fond transparent de préférence) dans
- *   07_Site/storefront/public/
- * puis tout se met à jour tout seul.
  */
 export function Logo({
+  variant = 'wordmark',
   tone = 'ink',
   tagline = false,
   className,
 }: {
+  variant?: 'symbol' | 'wordmark';
   tone?: 'ink' | 'cream';
   tagline?: boolean;
   className?: string;
 }) {
   const src =
-    tone === 'cream' ? '/logo-zaaynaa-or.png' : '/logo-zaaynaa-noir.png';
+    variant === 'symbol'
+      ? '/zaaynaa-symbol.png'
+      : tone === 'cream'
+        ? '/logo-zaaynaa-or.png'
+        : '/logo-zaaynaa-noir.png';
   // 'pending' au SSR + 1er rendu client (→ SVG, pas de mismatch d'hydratation),
   // puis on teste réellement si le PNG charge avant de basculer dessus.
   const [status, setStatus] = useState<'pending' | 'ok' | 'missing'>('pending');
@@ -43,7 +47,7 @@ export function Logo({
     return (
       <img
         src={src}
-        alt="ZAAYNAA — Modern Moroccan Quiet Luxury"
+        alt={variant === 'symbol' ? 'ZAAYNAA' : 'ZAAYNAA — Modern Moroccan Quiet Luxury'}
         className={className}
         decoding="async"
       />
@@ -59,10 +63,12 @@ export function Logo({
  * si le PNG n'est pas encore présent dans /public.
  */
 function LogoFallback({
+  variant = 'wordmark',
   tone = 'ink',
   tagline = false,
   className,
 }: {
+  variant?: 'symbol' | 'wordmark';
   tone?: 'ink' | 'cream';
   tagline?: boolean;
   className?: string;
@@ -70,6 +76,37 @@ function LogoFallback({
   const word = tone === 'cream' ? '#faf8f4' : '#1a1814';
   const gold = '#c9a96e';
   const petals = [-44, -22, 0, 22, 44];
+
+  if (variant === 'symbol') {
+    return (
+      <svg
+        viewBox="0 0 140 140"
+        className={className}
+        role="img"
+        aria-label="ZAAYNAA"
+      >
+        <g transform="translate(70 70)">
+          <path
+            d="M0 -44 L10 -10 L44 0 L10 10 L0 44 L-10 10 L-44 0 L-10 -10 Z"
+            fill="none"
+            stroke={gold}
+            strokeWidth="2"
+            opacity="0.65"
+          />
+          <g fill="none" stroke={gold} strokeWidth="4" strokeLinejoin="round">
+            {petals.map((a) => (
+              <path
+                key={a}
+                transform={`rotate(${a})`}
+                d="M0 8 C -10 -4 -8 -24 0 -34 C 8 -24 10 -4 0 8 Z"
+              />
+            ))}
+          </g>
+          <circle cy="9" r="4" fill={gold} />
+        </g>
+      </svg>
+    );
+  }
 
   return (
     <svg

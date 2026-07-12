@@ -47,7 +47,7 @@ export function Header({
   return (
     <header className={classes}>
       <NavLink prefetch="intent" to="/" end aria-label="ZAAYNAA — Accueil">
-        <Logo className="header-logo-svg" />
+        <Logo variant="symbol" className="header-logo-symbol" />
       </NavLink>
       <HeaderMenu
         menu={menu}

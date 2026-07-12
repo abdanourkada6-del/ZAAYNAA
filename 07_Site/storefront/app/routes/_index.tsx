@@ -50,12 +50,12 @@ type FeaturedProduct = {
   images?: {nodes: StorefrontImage[]} | null;
   priceRange: {minVariantPrice: MoneyV2};
 };
-type HomeFeatured = {products: {nodes: FeaturedProduct[]}} | null;
 type CategoryCollection = {
   id: string;
   handle: string;
   title: string;
   image?: StorefrontImage | null;
+  products?: {nodes: FeaturedProduct[]} | null;
 } | null;
 type HomeCategories = {
   necklaces: CategoryCollection;
@@ -69,13 +69,6 @@ export async function loader(args: Route.LoaderArgs) {
 }
 
 function loadDeferredData({context}: Route.LoaderArgs) {
-  const featured = context.storefront
-    .query(HOME_FEATURED_QUERY)
-    .catch((error: Error) => {
-      console.error(error);
-      return null;
-    }) as unknown as Promise<HomeFeatured>;
-
   const categories = context.storefront
     .query(HOME_CATEGORIES_QUERY)
     .catch((error: Error) => {
@@ -83,7 +76,7 @@ function loadDeferredData({context}: Route.LoaderArgs) {
       return null;
     }) as unknown as Promise<HomeCategories>;
 
-  return {featured, categories};
+  return {categories};
 }
 
 export default function Homepage() {
@@ -91,11 +84,10 @@ export default function Homepage() {
   return (
     <div className="home">
       <Hero />
-      <Marquee />
       <Reassurance />
       <Story />
       <Categories categories={data.categories} />
-      <FeaturedPieces featured={data.featured} />
+      <CollectionProductRails categories={data.categories} />
       <Cinematic />
       <Philosophy />
       <Materials />
@@ -159,35 +151,6 @@ function Hero() {
   );
 }
 
-/* ── Marquee (bandeau défilant) ─────────────────────── */
-const MARQUEE_ITEMS = [
-  'Vermeil Or 18k',
-  'Argent Sterling 925',
-  'Héritage Marocain',
-  'زَيْنَاء',
-  'Quiet Luxury',
-  'Détails Cachés',
-  'حب · صبر · نور',
-  'Élégance Intemporelle',
-];
-
-function Marquee() {
-  // Contenu doublé pour une boucle sans couture
-  const items = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
-  return (
-    <div className="marquee-wrap" aria-hidden="true">
-      <div className="marquee-track">
-        {items.map((item, i) => (
-          <div className="marquee-item" key={`${item}-${i}`}>
-            {item} <span className="marquee-dot" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ── Bandeau réassurance (icônes SVG fines) ─────────── */
 const REASSURANCE = [
   {
     label: 'Livraison offerte',
@@ -389,10 +352,24 @@ function Categories({categories}: {categories: Promise<HomeCategories>}) {
 }
 
 /* ── Pièces phares (grille asymétrique, produits réels) ── */
-function FeaturedPieces({featured}: {featured: Promise<HomeFeatured>}) {
+const PRODUCT_RAIL_LABELS: Array<{
+  key: 'rings' | 'bracelets' | 'necklaces' | 'earrings';
+  fr: string;
+}> = [
+  {key: 'rings', fr: 'Bagues'},
+  {key: 'bracelets', fr: 'Bracelets'},
+  {key: 'necklaces', fr: 'Colliers'},
+  {key: 'earrings', fr: 'Boucles dâ€™oreilles'},
+];
+
+function CollectionProductRails({
+  categories,
+}: {
+  categories: Promise<HomeCategories>;
+}) {
   return (
-    <section className="featured">
-      <div className="cat-header">
+    <section className="product-rails">
+      <div className="cat-header product-rails-header">
         <div>
           <Reveal>
             <div className="section-label">Nouveautés</div>
@@ -411,21 +388,59 @@ function FeaturedPieces({featured}: {featured: Promise<HomeFeatured>}) {
           </Link>
         </Reveal>
       </div>
-      <Suspense fallback={<div className="featured-grid" />}>
-        <Await resolve={featured}>
-          {(data) => {
-            const nodes = (data?.products?.nodes ?? [])
-              .filter((p) => isDisplayableProduct(p.handle))
-              .slice(0, 5);
+      <Suspense fallback={<div className="product-rail-skeleton" />}>
+        <Await resolve={categories}>
+          {(cats) => {
+            const rails = PRODUCT_RAIL_LABELS.map(({key, fr}) => ({
+              key,
+              fr,
+              collection: cats?.[key],
+              products: (cats?.[key]?.products?.nodes ?? []).filter((p) =>
+                isDisplayableProduct(p.handle),
+              ),
+            })).filter((rail) => rail.products.length > 0);
+
             return (
-              <div className="featured-grid">
-                {nodes.map((product, i) => (
-                  <ProductCardV2
-                    key={product.id}
-                    product={product as CardProduct}
-                    index={i}
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                  />
+              <div className="product-rail-stack">
+                {rails.map((rail, railIndex) => (
+                  <Reveal
+                    key={rail.key}
+                    className="product-rail"
+                    delay={railIndex * 0.08}
+                  >
+                    <div className="product-rail-head">
+                      <div>
+                        <p className="product-rail-kicker">
+                          0{railIndex + 1}
+                        </p>
+                        <h3>{rail.fr}</h3>
+                      </div>
+                      {rail.collection ? (
+                        <Link
+                          to={`/collections/${rail.collection.handle}`}
+                          className="btn-ghost product-rail-link"
+                        >
+                          Voir
+                        </Link>
+                      ) : null}
+                    </div>
+                    <div
+                      className="product-rail-track"
+                      aria-label={`Produits ${rail.fr}`}
+                    >
+                      {rail.products.map((product, i) => (
+                        <div className="product-rail-item" key={product.id}>
+                          <ProductCardV2
+                            product={product as CardProduct}
+                            index={i}
+                            loading={
+                              railIndex === 0 && i < 2 ? 'eager' : 'lazy'
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </Reveal>
                 ))}
               </div>
             );
@@ -670,7 +685,7 @@ function Newsletter() {
 }
 
 /* ── Requêtes Storefront API ────────────────────────── */
-const HOME_FEATURED_QUERY = `#graphql
+const HOME_CATEGORIES_QUERY = `#graphql
   fragment HomeFeaturedProduct on Product {
     id
     title
@@ -699,17 +714,6 @@ const HOME_FEATURED_QUERY = `#graphql
       }
     }
   }
-  query HomeFeatured($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    products(first: 8, sortKey: BEST_SELLING) {
-      nodes {
-        ...HomeFeaturedProduct
-      }
-    }
-  }
-` as const;
-
-const HOME_CATEGORIES_QUERY = `#graphql
   fragment HomeCategory on Collection {
     id
     handle
@@ -720,6 +724,11 @@ const HOME_CATEGORIES_QUERY = `#graphql
       altText
       width
       height
+    }
+    products(first: 10, sortKey: BEST_SELLING) {
+      nodes {
+        ...HomeFeaturedProduct
+      }
     }
   }
   query HomeCategories($country: CountryCode, $language: LanguageCode)

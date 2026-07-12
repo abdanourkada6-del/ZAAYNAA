@@ -359,15 +359,22 @@ main.main-padded {
   color: var(--ink);
 }
 
-.header-logo-svg {
-  height: 46px;
-  width: auto;
+.header-logo-symbol {
+  height: 48px;
+  width: 48px;
   display: block;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0;
+  mix-blend-mode: multiply;
 }
 
 .footer-logo-svg {
-  height: 86px;
-  width: auto;
+  height: 112px;
+  width: 240px;
+  object-fit: contain;
+  object-position: left center;
+  border-radius: 0;
   margin: 0 0 0.5rem -0.5rem;
 }
 
@@ -1987,11 +1994,11 @@ main.main-padded {
 
 .hero-img {
   position: absolute;
-  right: 0;
+  left: 0;
   top: 0;
   bottom: 0;
   width: 52%;
-  clip-path: polygon(8% 0%, 100% 0%, 100% 100%, 0% 100%);
+  clip-path: polygon(0 0, 92% 0, 100% 100%, 0% 100%);
   overflow: hidden;
 }
 
@@ -2016,13 +2023,15 @@ main.main-padded {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(13, 13, 13, 0.15), transparent 60%);
+  background: linear-gradient(225deg, rgba(13, 13, 13, 0.15), transparent 60%);
 }
 
 .hero-content {
   position: relative;
   z-index: 2;
-  padding-left: 10%;
+  margin-left: auto;
+  padding-left: 0;
+  padding-right: 10%;
   max-width: 620px;
 }
 
@@ -2427,6 +2436,102 @@ main.main-padded {
 }
 
 /* ── Philosophie ── */
+/* â”€â”€ Produits par collection : carrousels horizontaux â”€â”€ */
+.product-rails {
+  padding: 80px 0 130px;
+  overflow: hidden;
+}
+
+.product-rails-header {
+  padding: 0 10%;
+}
+
+.product-rail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 78px;
+}
+
+.product-rail {
+  padding-left: 10%;
+}
+
+.product-rail-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-right: 10%;
+  margin-bottom: 24px;
+}
+
+.product-rail-head h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 300;
+  color: var(--ink);
+}
+
+.product-rail-kicker {
+  margin: 0 0 6px;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+}
+
+.product-rail-link {
+  flex: 0 0 auto;
+}
+
+.product-rail-track {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-left: 10%;
+  scroll-snap-type: x proximity;
+  padding: 0 10% 18px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(138, 109, 59, 0.45) transparent;
+}
+
+.product-rail-track::-webkit-scrollbar {
+  height: 5px;
+}
+
+.product-rail-track::-webkit-scrollbar-track {
+  background: rgba(201, 169, 110, 0.12);
+}
+
+.product-rail-track::-webkit-scrollbar-thumb {
+  background: rgba(138, 109, 59, 0.45);
+}
+
+.product-rail-item {
+  flex: 0 0 clamp(220px, 24vw, 310px);
+  scroll-snap-align: start;
+}
+
+.product-rail-item .product-card:first-child .product-imgbox {
+  aspect-ratio: 3 / 4;
+  height: auto;
+  min-height: 0;
+}
+
+.product-rail-item .product-meta {
+  padding: 18px 18px 22px;
+}
+
+.product-rail-item .product-name {
+  font-size: 18px;
+}
+
+.product-rail-skeleton {
+  height: 380px;
+}
+
 .philosophy {
   padding: 140px 10%;
   background: var(--velvet);
@@ -2794,13 +2899,14 @@ main.main-padded {
     display: none;
   }
   .hero-content {
-    order: 1;
+    order: 2;
     position: relative;
     max-width: 100%;
+    margin-left: 0;
     padding: 30px 24px 22px;
   }
   .hero-img {
-    order: 2;
+    order: 1;
     position: relative;
     inset: auto;
     width: 100%;
@@ -2832,12 +2938,28 @@ main.main-padded {
     grid-template-columns: 1fr;
   }
   .featured,
+  .product-rails-header,
   .categories,
   .philosophy,
   .testimonials,
   .newsletter {
     padding-left: 24px;
     padding-right: 24px;
+  }
+  .product-rails {
+    padding: 70px 0 96px;
+  }
+  .product-rail {
+    padding-left: 24px;
+  }
+  .product-rail-head {
+    padding-right: 24px;
+  }
+  .product-rail-track {
+    padding-right: 24px;
+  }
+  .product-rail-item {
+    flex-basis: min(76vw, 300px);
   }
   .footer {
     padding: 60px 24px 40px;
@@ -3449,6 +3571,20 @@ body > main {
   }
   .header {
     padding: 14px 20px;
+  }
+  .header-logo-svg {
+    height: 44px;
+    width: 136px;
+  }
+  .product-rail-stack {
+    gap: 58px;
+  }
+  .product-rail-head {
+    align-items: start;
+    flex-direction: column;
+  }
+  .product-rail-item {
+    flex-basis: min(82vw, 280px);
   }
 }
 
