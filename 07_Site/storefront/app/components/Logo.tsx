@@ -1,33 +1,27 @@
 import {useEffect, useState} from 'react';
 
 /**
- * Logo ZAAYNAA.
+ * Logo ZAAYNAA — PNG transparents (dossier /public), déclinés en 3 variantes
+ * × 2 teintes :
+ *   variant : 'full' (symbole + wordmark) · 'symbol' (najma seule) · 'wordmark'
+ *   tone    : 'ink' (noir, sur fond clair) · 'cream' (clair, sur fond sombre)
+ *   → /logo-{variant}-{tone}.png
  *
- * Deux usages principaux :
- *   - variant="symbol"  → /zaaynaa-symbol.png (petit repère de marque, ex. header)
- *   - variant="wordmark" → /logo-zaaynaa-noir.png ou /logo-zaaynaa-or.png
- *                           (logo complet, ex. footer)
- *
- * Tant que les fichiers ne sont pas disponibles dans /public, on retombe
- * automatiquement sur le logo vectoriel de secours (aucun logo cassé).
+ * Tant que les fichiers ne sont pas dans /public, repli sur le logo vectoriel
+ * de secours (aucun logo cassé, pas de mismatch d'hydratation).
  */
 export function Logo({
-  variant = 'wordmark',
+  variant = 'full',
   tone = 'ink',
   tagline = false,
   className,
 }: {
-  variant?: 'symbol' | 'wordmark';
+  variant?: 'full' | 'symbol' | 'wordmark';
   tone?: 'ink' | 'cream';
   tagline?: boolean;
   className?: string;
 }) {
-  const src =
-    variant === 'symbol'
-      ? '/zaaynaa-symbol.png'
-      : tone === 'cream'
-        ? '/logo-zaaynaa-or.png'
-        : '/logo-zaaynaa-noir.png';
+  const src = `/logo-${variant}-${tone}.png`;
   // 'pending' au SSR + 1er rendu client (→ SVG, pas de mismatch d'hydratation),
   // puis on teste réellement si le PNG charge avant de basculer dessus.
   const [status, setStatus] = useState<'pending' | 'ok' | 'missing'>('pending');
@@ -55,7 +49,14 @@ export function Logo({
   }
 
   // 'pending' ou 'missing' → logo vectoriel de secours (aucune image cassée)
-  return <LogoFallback tone={tone} tagline={tagline} className={className} />;
+  return (
+    <LogoFallback
+      variant={variant}
+      tone={tone}
+      tagline={tagline}
+      className={className}
+    />
+  );
 }
 
 /**
@@ -63,12 +64,12 @@ export function Logo({
  * si le PNG n'est pas encore présent dans /public.
  */
 function LogoFallback({
-  variant = 'wordmark',
+  variant = 'full',
   tone = 'ink',
   tagline = false,
   className,
 }: {
-  variant?: 'symbol' | 'wordmark';
+  variant?: 'full' | 'symbol' | 'wordmark';
   tone?: 'ink' | 'cream';
   tagline?: boolean;
   className?: string;

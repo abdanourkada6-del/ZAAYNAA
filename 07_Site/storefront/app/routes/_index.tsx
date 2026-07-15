@@ -91,7 +91,6 @@ export default function Homepage() {
       <Cinematic />
       <Philosophy />
       <Materials />
-      <Testimonials />
       <Newsletter />
     </div>
   );
@@ -613,39 +612,6 @@ function Materials() {
 }
 
 /* ── Témoignages ────────────────────────────────────── */
-function Testimonials() {
-  const items = [
-    {
-      text: '« J’ai porté le collier Layali au mariage de ma sœur. Toutes les femmes m’ont demandé d’où il venait. ZAAYNAA a quelque chose de vraiment à part. »',
-      author: '— Nadia M., Casablanca',
-    },
-    {
-      text: '« La qualité est extraordinaire. On dirait une pièce d’atelier parisien. Je la porte tous les jours depuis trois mois. »',
-      author: '— Yasmine R., Paris',
-    },
-    {
-      text: '« ZAAYNAA comprend la femme arabe moderne. C’est élégant sans jamais en faire trop. On dirait que c’est fait pour nous. »',
-      author: '— Leila A., Dubaï',
-    },
-  ];
-  return (
-    <section className="testimonials">
-      <Reveal>
-        <h2>Ce qu&rsquo;elles en disent</h2>
-      </Reveal>
-      <div className="t-grid">
-        {items.map((t, i) => (
-          <Reveal className="t-card" key={t.author} delay={i * 0.15}>
-            <div className="t-stars">★★★★★</div>
-            <p className="t-text">{t.text}</p>
-            <p className="t-author">{t.author}</p>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 /* ── Newsletter ─────────────────────────────────────── */
 function Newsletter() {
   return (

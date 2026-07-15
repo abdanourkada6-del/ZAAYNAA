@@ -14,7 +14,7 @@ export function Footer(_props: FooterProps) {
     <footer className="footer">
       <div className="footer-top">
         <div>
-          <Logo tone="cream" tagline className="footer-logo-svg" />
+          <Logo variant="full" tone="cream" className="footer-logo-svg" />
           <p className="footer-tagline">{BRAND.intro}</p>
         </div>
 
