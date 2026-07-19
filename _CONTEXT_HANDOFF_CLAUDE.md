@@ -11,7 +11,7 @@
 - **Matériaux** : argent sterling 925 + vermeil or 18k (2,5 microns) ; pierres zircone CZ. (Ternit avec parfum/crème → prévoir instructions d'entretien. C'est le bon matériau, niveau Mejuri.)
 - **Palette** : ivoire `#FAF8F4`, or `#C9A96E`, or foncé `#8A6D3B`, émeraude `#1E3D34`, noir velours `#0D0D0D`, taupe `#6B6259`.
 - **Typo** : titres **Cormorant Garamond** (serif) + corps **Montserrat** (sans).
-- **Logo** : lotus + cadre zellige (étoile 8 branches) + wordmark serif. Dans `01_Brand/`. (Des variantes ont été générées via Canva.)
+- **Logo officiel** : monogramme **"ZY"** (serif gras, entrelacé) dans un cadre étoile marocaine 8 branches (zellige) + wordmark serif "ZAAYNAA". **Ce n'est PAS un lotus** (erreur corrigée le 2026-07-16). Fichiers de référence officiels : `01_Brand/new logo transparent.png` et `01_Brand/new logo.png` — toujours les uploader en référence pour tout visuel packaging (plan 6), ne jamais laisser l'IA réinventer le logo.
 
 ---
 
